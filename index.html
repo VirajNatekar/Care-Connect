@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Care Connect</title>
+</head>
+
+<body style="margin:0; font-family:Segoe UI, sans-serif; background:#aeb8c6;">
+
+  <!-- NAVBAR -->
+  <div
+    style="display:flex; justify-content:space-between; align-items:center; padding:20px 60px; background:white; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+    <h2 style="color:#2f55d4; margin:0;">Care Connect</h2>
+
+    <div>
+      <a href="login.html" style="margin-right:20px; text-decoration:none; color:#333; font-weight:600;">Login</a>
+      <a href="signup.html"
+        style="text-decoration:none; background:#2f55d4; color:white; padding:10px 18px; border-radius:6px;">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <div
+    style="display:flex; align-items:center; justify-content:space-between; padding:80px 60px; flex-wrap:wrap; gap:30px;">
+
+    <!-- LEFT TEXT -->
+    <div style="width:50%; min-width:300px;">
+      <h1 style="font-size:42px; color:#2f55d4; margin-bottom:20px;">
+        Welcome to Care Connect
+      </h1>
+
+      <p style="color:#444; font-size:16px; line-height:1.6; margin-bottom:30px;">
+        Care Connect is a smart clinic management system that helps doctors, receptionists, patients, and admins manage
+        appointments, records, billing, and daily clinic operations easily.
+      </p>
+
+      <button onclick="openPopup()"
+        style="background:#2f55d4; color:white; padding:12px 25px; border-radius:6px; border:none; cursor:pointer; margin-right:15px; font-weight:600; font-size:15px;">
+        Get Started
+      </button>
+
+      <a href="signup.html"
+        style="border:2px solid #2f55d4; color:#2f55d4; padding:12px 25px; border-radius:6px; text-decoration:none; font-weight:600;">
+        Create Account
+      </a>
+    </div>
+
+    <!-- RIGHT IMAGE -->
+    <div style="width:40%; min-width:280px; text-align:center;">
+      <img src="doctor1.png" alt="Clinic Image" style="width:100%; max-width:420px;">
+    </div>
+
+  </div>
+
+  <!-- FEATURES SECTION -->
+  <div
+    style="background:white; margin:0 40px 30px 40px; border-radius:14px; padding:35px 20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+    <h2 style="text-align:center; color:#2f55d4; margin-top:0; margin-bottom:25px;">System Features</h2>
+
+    <div style="display:flex; justify-content:space-around; text-align:center; flex-wrap:wrap; gap:20px;">
+
+      <div style="width:250px; margin:15px;">
+        <h3>👨‍💼 Admin Panel</h3>
+        <p>View all users, appointments, bills, payments, and system reports separately.</p>
+      </div>
+
+      <div style="width:250px; margin:15px;">
+        <h3>🧑 Patient Panel</h3>
+        <p>Book appointments, see approval status, fees, rejection reasons, and payment updates.</p>
+      </div>
+
+      <div style="width:250px; margin:15px;">
+        <h3>🧑‍💼 Receptionist Panel</h3>
+        <p>Approve or reject appointments, manage time slots, and approve payments.</p>
+      </div>
+
+      <div style="width:250px; margin:15px;">
+        <h3>👨‍⚕️ Doctor Panel</h3>
+        <p>View only assigned appointments and set the fees payable by the patient.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ROLE POPUP -->
+  <div id="rolePopup"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.45); justify-content:center; align-items:center; z-index:999;">
+
+    <div
+      style="background:white; width:520px; max-width:92%; border-radius:14px; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.2); position:relative;">
+
+      <span onclick="closePopup()"
+        style="position:absolute; top:10px; right:18px; font-size:26px; cursor:pointer; color:#666;">&times;</span>
+
+      <h2 style="margin-top:0; text-align:center; color:#2f55d4;">Choose Your Role</h2>
+      <p style="text-align:center; color:#666; margin-bottom:25px;">Select how you want to continue in Care Connect.</p>
+
+      <!-- Patient -->
+      <div style="border:1px solid #d9e1ff; border-radius:10px; padding:15px; margin-bottom:14px; background:#f8faff;">
+        <h3 style="margin:0 0 12px 0; color:#2f55d4;">Patient</h3>
+        <a href="login.html?role=patient"
+          style="display:inline-block; text-decoration:none; background:#2f55d4; color:white; padding:10px 18px; border-radius:6px; margin-right:10px; font-weight:600;">Login</a>
+        <a href="signup.html?role=patient"
+          style="display:inline-block; text-decoration:none; border:2px solid #2f55d4; color:#2f55d4; padding:8px 16px; border-radius:6px; font-weight:600;">Sign
+          Up</a>
+      </div>
+
+      <!-- Receptionist -->
+      <div style="border:1px solid #d9e1ff; border-radius:10px; padding:15px; margin-bottom:14px; background:#f8faff;">
+        <h3 style="margin:0 0 12px 0; color:#2f55d4;">Receptionist</h3>
+        <a href="login.html?role=receptionist"
+          style="display:inline-block; text-decoration:none; background:#2f55d4; color:white; padding:10px 18px; border-radius:6px; margin-right:10px; font-weight:600;">Login</a>
+        <a href="signup.html?role=receptionist"
+          style="display:inline-block; text-decoration:none; border:2px solid #2f55d4; color:#2f55d4; padding:8px 16px; border-radius:6px; font-weight:600;">Sign
+          Up</a>
+      </div>
+
+      <!-- Doctor -->
+      <div style="border:1px solid #d9e1ff; border-radius:10px; padding:15px; margin-bottom:14px; background:#f8faff;">
+        <h3 style="margin:0 0 12px 0; color:#2f55d4;">Doctor</h3>
+        <a href="login.html?role=doctor"
+          style="display:inline-block; text-decoration:none; background:#2f55d4; color:white; padding:10px 18px; border-radius:6px; margin-right:10px; font-weight:600;">Login</a>
+        <a href="signup.html?role=doctor"
+          style="display:inline-block; text-decoration:none; border:2px solid #2f55d4; color:#2f55d4; padding:8px 16px; border-radius:6px; font-weight:600;">Sign
+          Up</a>
+      </div>
+
+      <!-- Admin -->
+      <div style="border:1px solid #d9e1ff; border-radius:10px; padding:15px; background:#f8faff;">
+        <h3 style="margin:0 0 12px 0; color:#2f55d4;">Admin</h3>
+        <a href="login.html?role=admin"
+          style="display:inline-block; text-decoration:none; background:#2f55d4; color:white; padding:10px 18px; border-radius:6px; font-weight:600;">Login</a>
+        <span style="display:inline-block; margin-left:10px; color:#666; font-size:14px;">Admin signup is
+          disabled</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center; padding:20px; background:#2f55d4; color:white;">
+    © 2026 Care Connect | All Rights Reserved
+  </div>
+
+  <script>
+    function openPopup() {
+      document.getElementById("rolePopup").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("rolePopup").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      let popup = document.getElementById("rolePopup");
+      if (event.target === popup) {
+        popup.style.display = "none";
+      }
+    }
+  </script>
+
+</body>
+
+</html>

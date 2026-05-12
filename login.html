@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Care Connect</title>
+</head>
+
+<body style="margin:0; font-family:Segoe UI, sans-serif; background:#c9d4e4;">
+
+  <div
+    style="width:950px; max-width:95%; margin:40px auto; display:flex; border-radius:14px; overflow:hidden; background:white; box-shadow:0 10px 30px rgba(0,0,0,0.15); min-height:540px;">
+
+    <!-- LEFT SIDE -->
+    <div style="width:42%; display:flex; flex-direction:column;">
+
+      <div style="height:250px; background:#f2f2f2;">
+        <img src="doctor1.png" alt="Care Connect" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+
+      <div
+        style="flex:1; background:linear-gradient(135deg,#2f55d4,#4e6cf0); color:white; padding:35px; display:flex; flex-direction:column; justify-content:center;">
+        <h2 style="margin:0 0 15px 0; font-size:30px;">Care Connect</h2>
+        <p style="margin:0 0 10px 0; font-size:22px; font-weight:600;">Welcome Back</p>
+        <p style="margin:0; line-height:1.7; font-size:14px; color:#e6ecff;">
+          Login to access your dashboard and manage appointments, records, users, fees, and payment workflow smoothly.
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div
+      style="width:58%; padding:55px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;">
+
+      <h2 style="margin:0 0 10px 0; color:#2f55d4; font-size:30px;">Login</h2>
+      <p style="margin:0 0 25px 0; color:#666;">Enter your credentials to continue</p>
+
+      <form onsubmit="handleLogin(event)">
+        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Email</label>
+        <input id="email" type="email" placeholder="Enter your email"
+          style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Password</label>
+        <input id="password" type="password" placeholder="Enter your password"
+          style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+        <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Role</label>
+        <select id="role"
+          style="width:100%; padding:12px; margin:0 0 12px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px; background:white;">
+          <option value="">Select role</option>
+          <option value="patient">Patient</option>
+          <option value="receptionist">Receptionist</option>
+          <option value="doctor">Doctor</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <p id="roleText" style="margin:0 0 18px 0; color:#2f55d4; font-size:14px; font-weight:600;"></p>
+
+        <div style="text-align:right; margin-bottom:20px;">
+          <a href="#" style="text-decoration:none; color:#2f55d4; font-size:13px;">Forgot Password?</a>
+        </div>
+
+        <button type="submit"
+          style="width:100%; padding:13px; background:#2f55d4; color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+          Login
+        </button>
+
+        <p style="text-align:center; margin-top:20px; font-size:14px;">
+          Don’t have an account?
+          <a href="signup.html" style="color:#2f55d4; text-decoration:none; font-weight:600;">Sign Up</a>
+        </p>
+      </form>
+
+      <div style="margin-top:20px; padding:14px; background:#f4f7ff; border-left:4px solid #2f55d4; border-radius:6px;">
+        <p style="margin:0; color:#444; font-size:14px; line-height:1.6;">
+          <strong>Admin Login:</strong><br>
+          Email: admin@gmail.com<br>
+          Password: Admin@123
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const selectedRole = params.get("role");
+
+    if (selectedRole) {
+      const roleSelect = document.getElementById("role");
+      const roleText = document.getElementById("roleText");
+      roleSelect.value = selectedRole;
+      roleText.innerText = "Selected Role: " + selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
+
+      if (!email || !password || !role) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      // Fixed admin login
+      if (role === "admin") {
+        if (email === "admin@gmail.com" && password === "Admin@123") {
+          const adminUser = {
+            id: 999,
+            name: "Admin",
+            email: "admin@gmail.com",
+            role: "admin"
+          };
+
+          sessionStorage.setItem("loggedUser", JSON.stringify(adminUser));
+          window.location.href = "admin.html";
+          return;
+        } else {
+          alert("Invalid Admin Credentials");
+          return;
+        }
+      }
+
+      // Normal users login
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (!user) {
+        alert("Invalid credentials");
+        return;
+      }
+
+      if (user.role !== role) {
+        alert("Wrong role selected");
+        return;
+      }
+
+      sessionStorage.setItem("loggedUser", JSON.stringify(user));
+
+      if (role === "patient") window.location.href = "patient.html";
+      if (role === "receptionist") window.location.href = "receptionist.html";
+      if (role === "doctor") window.location.href = "doctor.html";
+    }
+  </script>
+
+</body>
+
+</html>

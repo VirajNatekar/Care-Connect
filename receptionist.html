@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard - Care Connect</title>
+</head>
+
+<body style="margin:0; font-family:Segoe UI, sans-serif; background:#eef2f7;">
+
+    <!-- HEADER -->
+    <div
+        style="background:#2f55d4; color:white; padding:18px 40px; display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0;">Care Connect - Receptionist Dashboard</h2>
+        <button onclick="window.location.href='profile.html'"
+            style="margin-right:10px; background:rgba(255,255,255,0.15); color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            My Profile
+        </button>
+        <button onclick="logout()"
+            style="background:rgba(255,255,255,0.15); color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+            Logout
+        </button>
+    </div>
+
+    <!-- MAIN -->
+    <div style="width:90%; max-width:1250px; margin:30px auto;">
+
+        <!-- WELCOME -->
+        <div
+            style="background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08); margin-bottom:25px;">
+            <h2 id="welcomeText" style="margin:0 0 10px 0; color:#2f55d4;">Welcome, Receptionist</h2>
+            <p style="margin:0; color:#555; line-height:1.6;">
+                You can approve or reject appointments and approve payments. Appointment approval is allowed only if no
+                other
+                approved appointment exists for the same doctor within 30 minutes.
+            </p>
+        </div>
+
+        <!-- DASHBOARD CARDS -->
+        <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:25px;">
+            <div
+                style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <h3 style="margin:0 0 10px 0; color:#2f55d4;">Total Appointments</h3>
+                <p id="totalAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+            </div>
+
+            <div
+                style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <h3 style="margin:0 0 10px 0; color:#2f55d4;">Pending</h3>
+                <p id="pendingAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+            </div>
+
+            <div
+                style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <h3 style="margin:0 0 10px 0; color:#2f55d4;">Approved</h3>
+                <p id="approvedAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+            </div>
+
+            <div
+                style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <h3 style="margin:0 0 10px 0; color:#2f55d4;">Payment Approved</h3>
+                <p id="paymentApprovedCount" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div style="background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+            <h2 style="margin-top:0; color:#2f55d4;">Manage Appointments & Payments</h2>
+
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+                    <thead>
+                        <tr style="background:#2f55d4; color:white;">
+                            <th style="padding:12px; border:1px solid #ddd;">Patient</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Doctor</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Date</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Time</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Reason</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Appointment Status</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Rejection Reason</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Fees</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Payment Status</th>
+                            <th style="padding:12px; border:1px solid #ddd;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTableBody">
+                        <tr>
+                            <td colspan="10"
+                                style="padding:15px; text-align:center; border:1px solid #ddd; color:#666;">
+                                No appointments available
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+
+        if (!loggedUser || loggedUser.role !== "receptionist") {
+            alert("Please login as receptionist first.");
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("welcomeText").innerText = "Welcome, " + loggedUser.name;
+
+        function logout() {
+            sessionStorage.removeItem("loggedUser");
+            window.location.href = "index.html";
+        }
+
+        function getAppointments() {
+            return JSON.parse(localStorage.getItem("appointments")) || [];
+        }
+
+        function saveAppointments(data) {
+            localStorage.setItem("appointments", JSON.stringify(data));
+        }
+
+        function getStatusColor(status) {
+            if (status === "Pending") return "#f39c12";
+            if (status === "Approved") return "#27ae60";
+            if (status === "Rejected") return "#e74c3c";
+            if (status === "Completed") return "#2f55d4";
+            return "#333";
+        }
+
+        function getPaymentColor(status) {
+            if (status === "Pending") return "#f39c12";
+            if (status === "Approved") return "#27ae60";
+            return "#333";
+        }
+
+        function updateCards(appointments) {
+            document.getElementById("totalAppointments").innerText = appointments.length;
+            document.getElementById("pendingAppointments").innerText = appointments.filter(app => app.status === "Pending").length;
+            document.getElementById("approvedAppointments").innerText = appointments.filter(app => app.status === "Approved").length;
+            document.getElementById("paymentApprovedCount").innerText = appointments.filter(app => app.paymentStatus === "Approved").length;
+        }
+
+        function timeToMinutes(timeStr) {
+            const parts = timeStr.split(":").map(Number);
+            const hours = parts[0] || 0;
+            const minutes = parts[1] || 0;
+            return hours * 60 + minutes;
+        }
+
+        function hasConflict(appointments, currentAppointment) {
+            return appointments.some(app => {
+                if (app.id === currentAppointment.id) return false;
+                if (app.doctorId !== currentAppointment.doctorId) return false;
+                if (app.appointmentDate !== currentAppointment.appointmentDate) return false;
+                if (app.status !== "Approved") return false;
+
+                const currentTime = timeToMinutes(currentAppointment.appointmentTime);
+                const otherTime = timeToMinutes(app.appointmentTime);
+
+                return Math.abs(currentTime - otherTime) < 30;
+            });
+        }
+
+        function renderAppointments() {
+            const appointments = getAppointments();
+            const tableBody = document.getElementById("appointmentTableBody");
+
+            if (appointments.length === 0) {
+                tableBody.innerHTML = `
+          <tr>
+            <td colspan="10" style="padding:15px; text-align:center; border:1px solid #ddd; color:#666;">
+              No appointments available
+            </td>
+          </tr>
+        `;
+                updateCards(appointments);
+                return;
+            }
+
+            tableBody.innerHTML = "";
+
+            appointments.forEach((appointment) => {
+                const feeText = appointment.amount ? "₹" + appointment.amount : "Not set yet";
+                const rejectionText = appointment.rejectionReason ? appointment.rejectionReason : "-";
+
+                let actionButtons = "";
+
+                if (appointment.status === "Pending") {
+                    actionButtons += `
+            <button onclick="approveAppointment(${appointment.id})"
+              style="padding:6px 10px; margin:2px; border:none; border-radius:5px; background:#27ae60; color:white; cursor:pointer;">
+              Approve
+            </button>
+            <button onclick="rejectAppointment(${appointment.id})"
+              style="padding:6px 10px; margin:2px; border:none; border-radius:5px; background:#e74c3c; color:white; cursor:pointer;">
+              Reject
+            </button>
+          `;
+                } else if (appointment.status === "Approved") {
+                    actionButtons += `
+            <div style="color:#27ae60; font-weight:600; margin-bottom:5px;">Appointment Approved</div>
+          `;
+                } else if (appointment.status === "Rejected") {
+                    actionButtons += `
+            <div style="color:#e74c3c; font-weight:600; margin-bottom:5px;">Appointment Rejected</div>
+          `;
+                }
+
+                if (appointment.status === "Approved" && appointment.amount && appointment.paymentStatus !== "Approved") {
+                    actionButtons += `
+            <button onclick="approvePayment(${appointment.id})"
+              style="padding:6px 10px; margin:2px; border:none; border-radius:5px; background:#2f55d4; color:white; cursor:pointer;">
+              Approve Payment
+            </button>
+          `;
+                }
+
+                if (appointment.paymentStatus === "Approved") {
+                    actionButtons += `
+            <div style="margin-top:6px; color:#27ae60; font-weight:600;">Payment Approved</div>
+          `;
+                }
+
+                tableBody.innerHTML += `
+          <tr>
+            <td style="padding:10px; border:1px solid #ddd;">${appointment.patientName}</td>
+            <td style="padding:10px; border:1px solid #ddd;">${appointment.doctorName}</td>
+            <td style="padding:10px; border:1px solid #ddd;">${appointment.appointmentDate}</td>
+            <td style="padding:10px; border:1px solid #ddd;">${appointment.appointmentTime}</td>
+            <td style="padding:10px; border:1px solid #ddd;">${appointment.reason}</td>
+            <td style="padding:10px; border:1px solid #ddd; font-weight:600; color:${getStatusColor(appointment.status)};">
+              ${appointment.status}
+            </td>
+            <td style="padding:10px; border:1px solid #ddd; color:#e74c3c;">
+              ${rejectionText}
+            </td>
+            <td style="padding:10px; border:1px solid #ddd;">${feeText}</td>
+            <td style="padding:10px; border:1px solid #ddd; font-weight:600; color:${getPaymentColor(appointment.paymentStatus || "Pending")}">
+              ${appointment.paymentStatus ? appointment.paymentStatus : "Pending"}
+            </td>
+            <td style="padding:10px; border:1px solid #ddd;">
+              ${actionButtons}
+            </td>
+          </tr>
+        `;
+            });
+
+            updateCards(appointments);
+        }
+
+        function approveAppointment(appointmentId) {
+            const appointments = getAppointments();
+            const index = appointments.findIndex(app => app.id === appointmentId);
+
+            if (index === -1) {
+                alert("Appointment not found.");
+                return;
+            }
+
+            const appointment = appointments[index];
+
+            if (hasConflict(appointments, appointment)) {
+                alert("This appointment cannot be approved because another appointment for the same doctor is already approved within 30 minutes.");
+                return;
+            }
+
+            appointments[index].status = "Approved";
+            appointments[index].rejectionReason = "";
+            saveAppointments(appointments);
+            alert("Appointment approved successfully.");
+            renderAppointments();
+        }
+
+        function rejectAppointment(appointmentId) {
+            const appointments = getAppointments();
+            const index = appointments.findIndex(app => app.id === appointmentId);
+
+            if (index === -1) {
+                alert("Appointment not found.");
+                return;
+            }
+
+            const reason = prompt("Enter reason for rejecting this appointment:");
+
+            if (reason === null) {
+                return;
+            }
+
+            if (reason.trim() === "") {
+                alert("Rejection reason is required.");
+                return;
+            }
+
+            appointments[index].status = "Rejected";
+            appointments[index].rejectionReason = reason.trim();
+            saveAppointments(appointments);
+            alert("Appointment rejected with reason.");
+            renderAppointments();
+        }
+
+        function approvePayment(appointmentId) {
+            const appointments = getAppointments();
+            const index = appointments.findIndex(app => app.id === appointmentId);
+
+            if (index === -1) {
+                alert("Appointment not found.");
+                return;
+            }
+
+            if (!appointments[index].amount) {
+                alert("Doctor has not set the fees yet.");
+                return;
+            }
+
+            if (appointments[index].status !== "Approved") {
+                alert("Only approved appointments can have payment approved.");
+                return;
+            }
+
+            appointments[index].paymentStatus = "Approved";
+            saveAppointments(appointments);
+            alert("Payment approved successfully.");
+            renderAppointments();
+        }
+
+        renderAppointments();
+    </script>
+
+</body>
+
+</html>

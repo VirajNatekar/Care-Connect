@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard - Care Connect</title>
+</head>
+
+<body style="margin:0; font-family:Segoe UI, sans-serif; background:#eef2f7;">
+
+  <!-- HEADER -->
+  <div
+    style="background:#2f55d4; color:white; padding:18px 40px; display:flex; justify-content:space-between; align-items:center;">
+    <h2 style="margin:0;">Care Connect - Patient Dashboard</h2>
+    <button onclick="window.location.href='profile.html'"
+      style="margin-right:10px; background:rgba(255,255,255,0.15); color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+      My Profile
+    </button>
+    <button onclick="logout()"
+      style="text-decoration:none; color:white; background:rgba(255,255,255,0.15); padding:10px 16px; border-radius:6px; border:none; cursor:pointer;">
+      Logout
+    </button>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <div style="width:90%; max-width:1100px; margin:30px auto;">
+
+    <!-- WELCOME CARD -->
+    <div
+      style="background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08); margin-bottom:25px;">
+      <h2 id="welcomeText" style="margin:0 0 10px 0; color:#2f55d4;">Welcome, Patient</h2>
+      <p style="margin:0; color:#555; line-height:1.6;">
+        Book your appointment by selecting a doctor, date, time, and reason. Only registered doctors will appear in the
+        dropdown.
+      </p>
+    </div>
+
+    <!-- DASHBOARD CARDS -->
+    <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">My Appointments</h3>
+        <p id="totalAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+      </div>
+
+      <div
+        style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Pending</h3>
+        <p id="pendingAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+      </div>
+
+      <div
+        style="flex:1; min-width:220px; background:white; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Approved</h3>
+        <p id="approvedAppointments" style="margin:0; font-size:28px; font-weight:bold; color:#333;">0</p>
+      </div>
+    </div>
+
+    <!-- FORM + INFO -->
+    <div style="display:flex; gap:25px; flex-wrap:wrap; margin-bottom:30px;">
+
+      <!-- APPOINTMENT FORM -->
+      <div
+        style="flex:2; min-width:320px; background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#2f55d4;">Take Appointment</h2>
+
+        <form onsubmit="bookAppointment(event)">
+          <label style="display:block; margin-bottom:8px; font-weight:600;">Patient Name</label>
+          <input id="patientName" type="text" readonly
+            style="width:100%; padding:12px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:#f5f5f5;">
+
+          <label style="display:block; margin-bottom:8px; font-weight:600;">Select Doctor</label>
+          <select id="doctorName"
+            style="width:100%; padding:12px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:white;">
+            <option value="">Choose Doctor</option>
+          </select>
+
+          <label style="display:block; margin-bottom:8px; font-weight:600;">Appointment Date</label>
+          <input id="appointmentDate" type="date"
+            style="width:100%; padding:12px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;">
+
+          <label style="display:block; margin-bottom:8px; font-weight:600;">Appointment Time</label>
+          <input id="appointmentTime" type="time"
+            style="width:100%; padding:12px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;">
+
+          <label style="display:block; margin-bottom:8px; font-weight:600;">Reason</label>
+          <textarea id="reason" placeholder="Enter reason for appointment"
+            style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; min-height:100px; resize:vertical;"></textarea>
+
+          <button type="submit"
+            style="width:100%; padding:14px; background:#2f55d4; color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+            Book Appointment
+          </button>
+        </form>
+      </div>
+
+      <!-- SIDE INFO -->
+      <div
+        style="flex:1; min-width:260px; background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#2f55d4;">Instructions</h2>
+        <p style="color:#555; line-height:1.7;">
+          Select a doctor from the registered doctors list, choose date and time, and submit your appointment request.
+        </p>
+
+        <div
+          style="background:#f4f7ff; border-left:4px solid #2f55d4; padding:15px; border-radius:6px; margin-top:20px;">
+          <h4 style="margin:0 0 8px 0; color:#2f55d4;">Payment Note</h4>
+          <p style="margin:0; color:#555; line-height:1.6; font-size:14px;">
+            After doctor review, the payable amount will appear in your appointment table. Then payment can be
+            processed.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPOINTMENTS TABLE -->
+    <div style="background:white; border-radius:12px; padding:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <h2 style="margin-top:0; color:#2f55d4;">My Appointments</h2>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+          <thead>
+            <tr style="background:#2f55d4; color:white;">
+              <th style="padding:12px; border:1px solid #ddd;">Doctor</th>
+              <th style="padding:12px; border:1px solid #ddd;">Date</th>
+              <th style="padding:12px; border:1px solid #ddd;">Time</th>
+              <th style="padding:12px; border:1px solid #ddd;">Reason</th>
+              <th style="padding:12px; border:1px solid #ddd;">Status</th>
+              <th style="padding:12px; border:1px solid #ddd;">Amount</th>
+              <th style="padding:12px; border:1px solid #ddd;">Payment</th>
+            </tr>
+          </thead>
+          <tbody id="appointmentTableBody">
+            <tr>
+              <td colspan="7" style="padding:15px; text-align:center; border:1px solid #ddd; color:#666;">
+                No appointments booked yet
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  <!-- PRESCRIPTIONS -->
+  <div
+    style="background:white; border-radius:12px; padding:25px; margin-top:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+    <h2 style="margin-top:0; color:#2f55d4;">My Prescriptions</h2>
+  
+    <div id="prescriptionList">
+      <p style="color:#666;">No prescriptions available</p>
+    </div>
+  </div>
+
+<script>
+  const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+
+  // 🔐 Auth Check
+  if (!loggedUser || loggedUser.role !== "patient") {
+    alert("Please login as patient first.");
+    window.location.href = "login.html";
+  }
+
+  // 👤 Welcome
+  document.getElementById("welcomeText").innerText = "Welcome, " + loggedUser.name;
+  document.getElementById("patientName").value = loggedUser.name;
+
+  // 🚪 Logout
+  function logout() {
+    sessionStorage.removeItem("loggedUser");
+    window.location.href = "index.html";
+  }
+
+  // 📦 Data Helpers
+  function getUsers() {
+    return JSON.parse(localStorage.getItem("users")) || [];
+  }
+
+  function getAppointments() {
+    return JSON.parse(localStorage.getItem("appointments")) || [];
+  }
+
+  function saveAppointments(data) {
+    localStorage.setItem("appointments", JSON.stringify(data));
+  }
+
+  // 👨‍⚕️ Load Doctors
+  function loadDoctors() {
+    const users = getUsers();
+    const doctors = users.filter(user => user.role === "doctor");
+    const doctorSelect = document.getElementById("doctorName");
+
+    doctorSelect.innerHTML = '<option value="">Choose Doctor</option>';
+
+    if (doctors.length === 0) {
+      doctorSelect.innerHTML += '<option value="">No doctors registered</option>';
+      return;
+    }
+
+    doctors.forEach(doctor => {
+      doctorSelect.innerHTML += `<option value="${doctor.id}">${doctor.name}</option>`;
+    });
+  }
+
+  // 🎨 Status Colors
+  function getStatusColor(status) {
+    if (status === "Pending") return "#f39c12";
+    if (status === "Approved") return "#27ae60";
+    if (status === "Rejected") return "#e74c3c";
+    return "#333";
+  }
+
+  function getPaymentColor(status) {
+    if (status === "Pending") return "#f39c12";
+    if (status === "Paid") return "#2f55d4";
+    if (status === "Approved") return "#27ae60";
+    return "#333";
+  }
+
+  // 📊 Dashboard Cards
+  function updateCards(myAppointments) {
+    document.getElementById("totalAppointments").innerText = myAppointments.length;
+    document.getElementById("pendingAppointments").innerText =
+      myAppointments.filter(app => app.status === "Pending").length;
+    document.getElementById("approvedAppointments").innerText =
+      myAppointments.filter(app => app.status === "Approved").length;
+  }
+
+  // 📋 Render Appointments
+  function renderAppointments() {
+    const appointments = getAppointments();
+    const myAppointments = appointments.filter(app => app.patientId === loggedUser.id);
+    const tableBody = document.getElementById("appointmentTableBody");
+
+    if (myAppointments.length === 0) {
+      tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:15px;">No appointments booked yet</td>
+      </tr>
+    `;
+      updateCards(myAppointments);
+      return;
+    }
+
+    tableBody.innerHTML = "";
+
+    myAppointments.forEach(app => {
+      tableBody.innerHTML += `
+      <tr>
+        <td>${app.doctorName}</td>
+        <td>${app.appointmentDate}</td>
+        <td>${app.appointmentTime}</td>
+        <td>${app.reason}</td>
+        <td style="color:${getStatusColor(app.status)}; font-weight:bold;">${app.status}</td>
+        <td>${app.amount ? "₹" + app.amount : "-"}</td>
+        <td style="color:${getPaymentColor(app.paymentStatus)}; font-weight:bold;">
+          ${app.paymentStatus || "Pending"}
+        </td>
+      </tr>
+    `;
+    });
+
+    updateCards(myAppointments);
+  }
+
+  // 📝 Book Appointment
+  function bookAppointment(event) {
+    event.preventDefault();
+
+    const doctorSelect = document.getElementById("doctorName");
+    const doctorId = Number(doctorSelect.value);
+    const doctorName = doctorSelect.options[doctorSelect.selectedIndex]?.text || "";
+    const appointmentDate = document.getElementById("appointmentDate").value;
+    const appointmentTime = document.getElementById("appointmentTime").value;
+    const reason = document.getElementById("reason").value.trim();
+
+    if (!doctorId || !appointmentDate || !appointmentTime || !reason) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    const appointments = getAppointments();
+
+    const newAppointment = {
+      id: Date.now(),
+      patientId: loggedUser.id,
+      patientName: loggedUser.name,
+      doctorId: doctorId,
+      doctorName: doctorName,
+      appointmentDate: appointmentDate,
+      appointmentTime: appointmentTime,
+      reason: reason,
+      status: "Pending",
+      amount: null,
+      paymentStatus: "Pending"
+    };
+
+    appointments.push(newAppointment);
+    saveAppointments(appointments);
+
+    alert("Appointment booked successfully.");
+
+    event.target.reset();
+    document.getElementById("patientName").value = loggedUser.name;
+
+    loadDoctors();
+    renderAppointments();
+  }
+
+  // 🧾 LOAD PRESCRIPTIONS (NEW FEATURE)
+  function loadPrescriptions() {
+    const prescriptions = JSON.parse(localStorage.getItem("prescriptions")) || [];
+
+    const myPrescriptions = prescriptions.filter(p =>
+      p.patientId === loggedUser.id
+    );
+
+    const container = document.getElementById("prescriptionList");
+
+    if (!container) return; // safety
+
+    if (myPrescriptions.length === 0) {
+      container.innerHTML = "<p style='color:#666;'>No prescriptions available</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+
+    myPrescriptions.forEach(p => {
+      container.innerHTML += `
+      <div style="border:1px solid #ddd; padding:15px; margin:10px 0; border-radius:8px; background:#f9fbff;">
+        <p><b>Date:</b> ${p.date}</p>
+        <p><b>Doctor:</b> ${p.doctorName}</p>
+        <p><b>Medicines:</b> ${p.medicines}</p>
+        <p><b>Notes:</b> ${p.notes}</p>
+      </div>
+    `;
+    });
+  }
+
+  // 🚀 INIT
+  loadDoctors();
+  renderAppointments();
+  loadPrescriptions();
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Care Connect</title>
+</head>
+
+<body style="margin:0; padding:0; font-family:Segoe UI, sans-serif; background:#aeb8c6;">
+
+    <div
+        style="width:1000px; max-width:95%; margin:50px auto; display:flex; border-radius:15px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.2); background:#ffffff; min-height:560px;">
+
+        <!-- LEFT SIDE -->
+        <div
+            style="width:55%; background:#f4f4f4; padding:50px 60px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;">
+
+            <h1 style="color:#2f55d4; margin-bottom:10px;">Create Account</h1>
+            <p style="color:#555; margin-bottom:30px;">Fill details to create your Care Connect account</p>
+
+            <form onsubmit="handleSignup(event)">
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Full Name</label>
+                <input id="name" type="text" placeholder="Enter your name"
+                    style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Email</label>
+                <input id="email" type="email" placeholder="Enter your email"
+                    style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Select Role</label>
+                <select id="role"
+                    style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px; background:white;">
+                    <option value="">Choose your role</option>
+                    <option value="patient">Patient</option>
+                    <option value="receptionist">Receptionist</option>
+                    <option value="doctor">Doctor</option>
+                </select>
+
+                <p id="roleText" style="margin:0 0 18px 0; color:#2f55d4; font-size:14px; font-weight:600;"></p>
+
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Password</label>
+                <input id="password" type="password" placeholder="Create password"
+                    style="width:100%; padding:12px; margin:0 0 18px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Confirm Password</label>
+                <input id="confirmPassword" type="password" placeholder="Confirm password"
+                    style="width:100%; padding:12px; margin:0 0 25px 0; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size:15px;">
+
+                <button type="submit"
+                    style="width:100%; padding:14px; background:#3f5bd8; color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+                    Sign Up
+                </button>
+
+                <p style="text-align:center; margin-top:20px; font-size:15px;">
+                    Already have an account?
+                    <a href="login.html" style="color:#2f55d4; text-decoration:none; font-weight:600;">Login</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div style="width:45%; display:flex; flex-direction:column;">
+
+            <div style="height:250px; background:#ffffff; display:flex; justify-content:center; align-items:center;">
+                <img src="doctor1.png" alt="Care Connect" style="height:100%; object-fit:contain;">
+            </div>
+
+            <div
+                style="flex:1; background:linear-gradient(135deg,#2f55d4,#4e6cf0); color:white; padding:50px 40px; display:flex; flex-direction:column; justify-content:center;">
+                <h2 style="margin-bottom:15px; font-size:22px;">Join Care Connect</h2>
+                <p style="line-height:1.7; font-size:15px; margin:0;">
+                    Create your account to manage clinic operations smoothly. Patients can book appointments, doctors
+                    can set fees, and receptionists can manage approvals and payments.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const selectedRole = params.get("role");
+
+        if (selectedRole && selectedRole !== "admin") {
+            const roleSelect = document.getElementById("role");
+            const roleText = document.getElementById("roleText");
+            roleSelect.value = selectedRole;
+            roleText.innerText = "Selected Role: " + selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const role = document.getElementById("role").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (!name || !email || !role || !password || !confirmPassword) {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            if (role === "admin") {
+                alert("Admin account cannot be created.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password do not match.");
+                return;
+            }
+
+            const emailExists = users.find(user => user.email === email);
+            if (emailExists) {
+                alert("User already exists with this email.");
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                role: role
+            };
+
+            users.push(newUser);
+            localStorage.setItem("users", JSON.stringify(users));
+
+            alert("Signup successful!");
+            window.location.href = "login.html?role=" + role;
+        }
+    </script>
+
+</body>
+
+</html>

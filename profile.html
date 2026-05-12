@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+</head>
+
+<body style="font-family:Segoe UI; background:#eef2f7;">
+
+    <!-- HEADER -->
+    <div style="background:#2f55d4; color:white; padding:18px 40px; display:flex; justify-content:space-between;">
+        <h2>My Profile</h2>
+        <button onclick="goBack()" style="padding:10px; border:none; background:white; cursor:pointer;">Back</button>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div style="max-width:500px; margin:40px auto; background:white; padding:25px; border-radius:12px;">
+
+        <div style="text-align:center;">
+            <img id="profilePic" src="https://via.placeholder.com/120" width="120" style="border-radius:50%;">
+            <br><br>
+            <input type="file" onchange="uploadImage(event)">
+        </div>
+
+        <br>
+
+        <input id="name" placeholder="Name" style="width:100%; padding:10px; margin:10px 0;">
+        <input id="email" placeholder="Email" style="width:100%; padding:10px; margin:10px 0;">
+        <input id="role" disabled style="width:100%; padding:10px; margin:10px 0; background:#eee;">
+
+        <button onclick="saveProfile()" style="width:100%; padding:12px; background:#2f55d4; color:white; border:none;">
+            Save Profile
+        </button>
+
+    </div>
+
+    <script>
+        const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+
+        if (!loggedUser) {
+            alert("Login first");
+            window.location.href = "login.html";
+        }
+
+        // Load profile
+        function loadProfile() {
+            let key = "profile_" + loggedUser.id;
+            let data = JSON.parse(localStorage.getItem(key)) || {};
+
+            document.getElementById("name").value = data.name || loggedUser.name;
+            document.getElementById("email").value = data.email || "";
+            document.getElementById("role").value = loggedUser.role;
+
+            if (data.image) {
+                document.getElementById("profilePic").src = data.image;
+            }
+        }
+
+        // Save profile
+        function saveProfile() {
+            let key = "profile_" + loggedUser.id;
+
+            let data = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                image: document.getElementById("profilePic").src
+            };
+
+            localStorage.setItem(key, JSON.stringify(data));
+            alert("Profile Saved!");
+        }
+
+        // Upload image
+        function uploadImage(event) {
+            let reader = new FileReader();
+
+            reader.onload = function () {
+                document.getElementById("profilePic").src = reader.result;
+            };
+
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Go back based on role
+        function goBack() {
+            let role = loggedUser.role;
+
+            if (role === "doctor") window.location.href = "doctor.html";
+            else if (role === "patient") window.location.href = "patient.html";
+            else if (role === "admin") window.location.href = "admin.html";
+            else window.location.href = "receptionist.html";
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Care Connect</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- jsPDF + AutoTable -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body style="margin:0; font-family:Segoe UI, sans-serif; background:#eef2f7;">
+
+  <!-- HEADER -->
+  <div
+    style="background:#2f55d4; color:white; padding:18px 40px; display:flex; justify-content:space-between; align-items:center;">
+    <h2 style="margin:0;">Care Connect - Admin Dashboard</h2>
+    <button onclick="window.location.href='profile.html'"
+      style="margin-right:10px; background:rgba(255,255,255,0.15); color:white; padding:10px 16px; border:none; border-radius:6px; cursor:pointer;">
+      My Profile
+    </button>
+    <button onclick="logout()"
+      style="background:rgba(255,255,255,0.2); border:none; padding:10px 15px; border-radius:6px; color:white; cursor:pointer;">
+      Logout
+    </button>
+  </div>
+
+  <div style="width:92%; margin:30px auto;">
+
+    <!-- WELCOME -->
+    <div
+      style="background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <h2 id="welcomeText" style="color:#2f55d4; margin:0 0 10px 0;">Welcome, Admin</h2>
+      <p style="color:#555; margin:0;">
+        This is a view-only dashboard. You can monitor users, appointments, fees, payments, charts, and download PDF
+        reports.
+      </p>
+    </div>
+
+    <!-- CARDS -->
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Total Users</h3>
+        <h2 id="totalUsers" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Patients</h3>
+        <h2 id="patientsCount" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Doctors</h3>
+        <h2 id="doctorsCount" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Receptionists</h3>
+        <h2 id="receptionistsCount" style="margin:0;">0</h2>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Appointments</h3>
+        <h2 id="totalAppointments" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Approved</h3>
+        <h2 id="approvedAppointments" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Rejected</h3>
+        <h2 id="rejectedAppointments" style="margin:0;">0</h2>
+      </div>
+      <div
+        style="flex:1; min-width:210px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin:0 0 10px 0; color:#2f55d4;">Revenue</h3>
+        <h2 id="revenue" style="margin:0;">₹0</h2>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:320px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin-top:0; color:#2f55d4;">User Distribution Chart</h3>
+        <canvas id="usersChart" height="220"></canvas>
+      </div>
+
+      <div
+        style="flex:1; min-width:320px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin-top:0; color:#2f55d4;">Appointment Status Chart</h3>
+        <canvas id="appointmentsChart" height="220"></canvas>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:320px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin-top:0; color:#2f55d4;">Payment Status Chart</h3>
+        <canvas id="paymentsChart" height="220"></canvas>
+      </div>
+
+      <div
+        style="flex:1; min-width:320px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="margin-top:0; color:#2f55d4;">Revenue by Doctor</h3>
+        <canvas id="doctorRevenueChart" height="220"></canvas>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div
+      style="background:white; padding:20px; border-radius:10px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <h3 style="margin-top:0; color:#2f55d4;">Filters</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap;">
+        <input type="text" id="search" placeholder="Search users by name, email or role" onkeyup="renderDashboard()"
+          style="flex:2; min-width:260px; padding:10px; border:1px solid #ccc; border-radius:6px;">
+
+        <select id="doctorFilter" onchange="renderDashboard()"
+          style="flex:1; min-width:220px; padding:10px; border:1px solid #ccc; border-radius:6px;">
+          <option value="">All Doctors</option>
+        </select>
+
+        <select id="statusFilter" onchange="renderDashboard()"
+          style="flex:1; min-width:220px; padding:10px; border:1px solid #ccc; border-radius:6px;">
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div
+      style="background:white; padding:20px; border-radius:10px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <h2 style="margin-top:0; color:#2f55d4;">All Users</h2>
+      <table border="1" width="100%" style="border-collapse:collapse;">
+        <thead style="background:#2f55d4; color:white;">
+          <tr>
+            <th style="padding:10px;">Name</th>
+            <th style="padding:10px;">Email</th>
+            <th style="padding:10px;">Role</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable"></tbody>
+      </table>
+    </div>
+
+    <!-- SEPARATE USERS -->
+    <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:25px;">
+      <div
+        style="flex:1; min-width:300px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#2f55d4;">Patients</h2>
+        <table border="1" width="100%" style="border-collapse:collapse;">
+          <thead style="background:#2f55d4; color:white;">
+            <tr>
+              <th style="padding:10px;">Name</th>
+              <th style="padding:10px;">Email</th>
+            </tr>
+          </thead>
+          <tbody id="patientsTable"></tbody>
+        </table>
+      </div>
+
+      <div
+        style="flex:1; min-width:300px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#2f55d4;">Doctors</h2>
+        <table border="1" width="100%" style="border-collapse:collapse;">
+          <thead style="background:#2f55d4; color:white;">
+            <tr>
+              <th style="padding:10px;">Name</th>
+              <th style="padding:10px;">Email</th>
+            </tr>
+          </thead>
+          <tbody id="doctorsTable"></tbody>
+        </table>
+      </div>
+
+      <div
+        style="flex:1; min-width:300px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <h2 style="margin-top:0; color:#2f55d4;">Receptionists</h2>
+        <table border="1" width="100%" style="border-collapse:collapse;">
+          <thead style="background:#2f55d4; color:white;">
+            <tr>
+              <th style="padding:10px;">Name</th>
+              <th style="padding:10px;">Email</th>
+            </tr>
+          </thead>
+          <tbody id="receptionistsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div
+      style="background:white; padding:20px; border-radius:10px; margin-bottom:25px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h2 style="margin:0; color:#2f55d4;">Appointments</h2>
+        <button onclick="downloadAppointmentsPDF()"
+          style="background:#2f55d4; color:white; border:none; padding:10px 14px; border-radius:6px; cursor:pointer;">
+          Download Appointments PDF
+        </button>
+      </div>
+
+      <table border="1" width="100%" style="border-collapse:collapse; margin-top:15px;">
+        <thead style="background:#2f55d4; color:white;">
+          <tr>
+            <th style="padding:10px;">Patient</th>
+            <th style="padding:10px;">Doctor</th>
+            <th style="padding:10px;">Date</th>
+            <th style="padding:10px;">Time</th>
+            <th style="padding:10px;">Status</th>
+            <th style="padding:10px;">Rejection</th>
+          </tr>
+        </thead>
+        <tbody id="appointmentsTable"></tbody>
+      </table>
+    </div>
+
+    <!-- BILLS -->
+    <div style="background:white; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h2 style="margin:0; color:#2f55d4;">Bills</h2>
+        <button onclick="downloadBillsPDF()"
+          style="background:#2f55d4; color:white; border:none; padding:10px 14px; border-radius:6px; cursor:pointer;">
+          Download Bills PDF
+        </button>
+      </div>
+
+      <table border="1" width="100%" style="border-collapse:collapse; margin-top:15px;">
+        <thead style="background:#2f55d4; color:white;">
+          <tr>
+            <th style="padding:10px;">Patient</th>
+            <th style="padding:10px;">Doctor</th>
+            <th style="padding:10px;">Amount</th>
+            <th style="padding:10px;">Payment</th>
+          </tr>
+        </thead>
+        <tbody id="billsTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    const loggedUser = JSON.parse(sessionStorage.getItem("loggedUser"));
+
+    if (!loggedUser || loggedUser.role !== "admin") {
+      alert("Please login as admin first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("welcomeText").innerText = "Welcome, " + (loggedUser.name || "Admin");
+
+    let usersChartInstance = null;
+    let appointmentsChartInstance = null;
+    let paymentsChartInstance = null;
+    let doctorRevenueChartInstance = null;
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    function getUsers() {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const adminExists = users.some(u => u.email === "admin@gmail.com" && u.role === "admin");
+
+      if (!adminExists) {
+        users.unshift({
+          id: 999,
+          name: "Admin",
+          email: "admin@gmail.com",
+          password: "Admin@123",
+          role: "admin"
+        });
+      }
+      return users;
+    }
+
+    function getAppointments() {
+      return JSON.parse(localStorage.getItem("appointments")) || [];
+    }
+
+    function getFilteredUsers(users) {
+      const search = document.getElementById("search").value.toLowerCase().trim();
+      if (!search) return users;
+
+      return users.filter(u =>
+        (u.name || "").toLowerCase().includes(search) ||
+        (u.email || "").toLowerCase().includes(search) ||
+        (u.role || "").toLowerCase().includes(search)
+      );
+    }
+
+    function getFilteredAppointments(apps) {
+      const doctor = document.getElementById("doctorFilter").value;
+      const status = document.getElementById("statusFilter").value;
+
+      return apps.filter(app => {
+        const doctorMatch = doctor ? app.doctorName === doctor : true;
+        const statusMatch = status ? app.status === status : true;
+        return doctorMatch && statusMatch;
+      });
+    }
+
+    function renderDoctorFilter(users) {
+      const doctors = users.filter(u => u.role === "doctor");
+      const select = document.getElementById("doctorFilter");
+      const current = select.value;
+
+      select.innerHTML = `<option value="">All Doctors</option>`;
+      doctors.forEach(doc => {
+        select.innerHTML += `<option value="${doc.name}">${doc.name}</option>`;
+      });
+
+      if ([...select.options].some(opt => opt.value === current)) {
+        select.value = current;
+      }
+    }
+
+    function renderCards(users, appointments) {
+      const patients = users.filter(u => u.role === "patient");
+      const doctors = users.filter(u => u.role === "doctor");
+      const receptionists = users.filter(u => u.role === "receptionist");
+
+      document.getElementById("totalUsers").innerText = users.length;
+      document.getElementById("patientsCount").innerText = patients.length;
+      document.getElementById("doctorsCount").innerText = doctors.length;
+      document.getElementById("receptionistsCount").innerText = receptionists.length;
+
+      document.getElementById("totalAppointments").innerText = appointments.length;
+      document.getElementById("approvedAppointments").innerText = appointments.filter(a => a.status === "Approved").length;
+      document.getElementById("rejectedAppointments").innerText = appointments.filter(a => a.status === "Rejected").length;
+
+      const revenue = appointments
+        .filter(a => a.paymentStatus === "Approved")
+        .reduce((sum, a) => sum + Number(a.amount || 0), 0);
+
+      document.getElementById("revenue").innerText = "₹" + revenue;
+    }
+
+    function fillTable(tableId, rows, emptyColspan, emptyText) {
+      const table = document.getElementById(tableId);
+      if (!rows.length) {
+        table.innerHTML = `<tr><td colspan="${emptyColspan}" style="padding:12px; text-align:center;">${emptyText}</td></tr>`;
+        return;
+      }
+      table.innerHTML = rows.join("");
+    }
+
+    function renderUsersTable(users) {
+      const filtered = getFilteredUsers(users);
+      fillTable("usersTable", filtered.map(u => `
+        <tr>
+          <td style="padding:10px;">${u.name || "-"}</td>
+          <td style="padding:10px;">${u.email || "-"}</td>
+          <td style="padding:10px; text-transform:capitalize;">${u.role || "-"}</td>
+        </tr>
+      `), 3, "No users found");
+    }
+
+    function renderRoleTable(users, role, tableId) {
+      const filtered = getFilteredUsers(users).filter(u => u.role === role);
+      fillTable(tableId, filtered.map(u => `
+        <tr>
+          <td style="padding:10px;">${u.name || "-"}</td>
+          <td style="padding:10px;">${u.email || "-"}</td>
+        </tr>
+      `), 2, `No ${role}s found`);
+    }
+
+    function renderAppointmentsTable(apps) {
+      const filtered = getFilteredAppointments(apps);
+      fillTable("appointmentsTable", filtered.map(a => `
+        <tr>
+          <td style="padding:10px;">${a.patientName || "-"}</td>
+          <td style="padding:10px;">${a.doctorName || "-"}</td>
+          <td style="padding:10px;">${a.appointmentDate || "-"}</td>
+          <td style="padding:10px;">${a.appointmentTime || "-"}</td>
+          <td style="padding:10px;">${a.status || "-"}</td>
+          <td style="padding:10px;">${a.rejectionReason || "-"}</td>
+        </tr>
+      `), 6, "No appointments found");
+    }
+
+    function renderBillsTable(apps) {
+      const filtered = getFilteredAppointments(apps).filter(a => a.amount);
+      fillTable("billsTable", filtered.map(a => `
+        <tr>
+          <td style="padding:10px;">${a.patientName || "-"}</td>
+          <td style="padding:10px;">${a.doctorName || "-"}</td>
+          <td style="padding:10px;">₹${a.amount}</td>
+          <td style="padding:10px;">${a.paymentStatus || "Pending"}</td>
+        </tr>
+      `), 4, "No bills found");
+    }
+
+    function renderCharts(users, appointments) {
+      const patients = users.filter(u => u.role === "patient").length;
+      const doctors = users.filter(u => u.role === "doctor").length;
+      const receptionists = users.filter(u => u.role === "receptionist").length;
+
+      const pendingApps = appointments.filter(a => a.status === "Pending").length;
+      const approvedApps = appointments.filter(a => a.status === "Approved").length;
+      const rejectedApps = appointments.filter(a => a.status === "Rejected").length;
+      const completedApps = appointments.filter(a => a.status === "Completed").length;
+
+      const pendingPayments = appointments.filter(a => (a.amount && a.paymentStatus !== "Approved")).length;
+      const approvedPayments = appointments.filter(a => a.paymentStatus === "Approved").length;
+
+      const doctorRevenueMap = {};
+      appointments.forEach(app => {
+        if (app.paymentStatus === "Approved" && app.amount) {
+          doctorRevenueMap[app.doctorName] = (doctorRevenueMap[app.doctorName] || 0) + Number(app.amount);
+        }
+      });
+
+      const doctorNames = Object.keys(doctorRevenueMap);
+      const doctorRevenueValues = Object.values(doctorRevenueMap);
+
+      if (usersChartInstance) usersChartInstance.destroy();
+      if (appointmentsChartInstance) appointmentsChartInstance.destroy();
+      if (paymentsChartInstance) paymentsChartInstance.destroy();
+      if (doctorRevenueChartInstance) doctorRevenueChartInstance.destroy();
+
+      usersChartInstance = new Chart(document.getElementById("usersChart"), {
+        type: "pie",
+        data: {
+          labels: ["Patients", "Doctors", "Receptionists"],
+          datasets: [{
+            data: [patients, doctors, receptionists]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+
+      appointmentsChartInstance = new Chart(document.getElementById("appointmentsChart"), {
+        type: "bar",
+        data: {
+          labels: ["Pending", "Approved", "Rejected", "Completed"],
+          datasets: [{
+            label: "Appointments",
+            data: [pendingApps, approvedApps, rejectedApps, completedApps]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+
+      paymentsChartInstance = new Chart(document.getElementById("paymentsChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Pending Payments", "Approved Payments"],
+          datasets: [{
+            data: [pendingPayments, approvedPayments]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+
+      doctorRevenueChartInstance = new Chart(document.getElementById("doctorRevenueChart"), {
+        type: "bar",
+        data: {
+          labels: doctorNames.length ? doctorNames : ["No Revenue"],
+          datasets: [{
+            label: "Revenue",
+            data: doctorRevenueValues.length ? doctorRevenueValues : [0]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function downloadAppointmentsPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const filtered = getFilteredAppointments(getAppointments());
+
+      doc.setFontSize(18);
+      doc.text("Care Connect - Appointments Report", 14, 18);
+
+      const rows = filtered.map(a => [
+        a.patientName || "-",
+        a.doctorName || "-",
+        a.appointmentDate || "-",
+        a.appointmentTime || "-",
+        a.status || "-",
+        a.rejectionReason || "-"
+      ]);
+
+      doc.autoTable({
+        startY: 28,
+        head: [["Patient", "Doctor", "Date", "Time", "Status", "Rejection"]],
+        body: rows.length ? rows : [["No appointments found", "", "", "", "", ""]]
+      });
+
+      doc.save("care_connect_appointments_report.pdf");
+    }
+
+    function downloadBillsPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const filtered = getFilteredAppointments(getAppointments()).filter(a => a.amount);
+
+      doc.setFontSize(18);
+      doc.text("Care Connect - Bills Report", 14, 18);
+
+      const rows = filtered.map(a => [
+        a.patientName || "-",
+        a.doctorName || "-",
+        "₹" + (a.amount || 0),
+        a.paymentStatus || "Pending"
+      ]);
+
+      doc.autoTable({
+        startY: 28,
+        head: [["Patient", "Doctor", "Amount", "Payment"]],
+        body: rows.length ? rows : [["No bills found", "", "", ""]]
+      });
+
+      doc.save("care_connect_bills_report.pdf");
+    }
+
+    function renderDashboard() {
+      const users = getUsers();
+      const appointments = getAppointments();
+
+      renderDoctorFilter(users);
+      renderCards(users, appointments);
+      renderUsersTable(users);
+      renderRoleTable(users, "patient", "patientsTable");
+      renderRoleTable(users, "doctor", "doctorsTable");
+      renderRoleTable(users, "receptionist", "receptionistsTable");
+      renderAppointmentsTable(appointments);
+      renderBillsTable(appointments);
+      renderCharts(users, appointments);
+    }
+
+    renderDashboard();
+  </script>
+
+</body>
+
+</html>
